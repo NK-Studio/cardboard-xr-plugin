@@ -35,8 +35,7 @@ public class CardboardReticlePointer : MonoBehaviour
     /// </para><para>
     /// Default value 32767 ensures gaze reticle is always rendered on top.
     /// </para></remarks>
-    [Range(-32767, 32767)]
-    public int ReticleSortingOrder = 32767;
+    [Range(-32767, 32767)] public int ReticleSortingOrder = 32767;
 
     /// <summary>
     /// Mask used to indicate interactive objects.
@@ -155,14 +154,16 @@ public class CardboardReticlePointer : MonoBehaviour
                 // New GameObject.
                 if (IsInteractive(_gazedAtObject))
                 {
-                    _gazedAtObject?.SendMessage("OnPointerExit");
+                    if (_gazedAtObject)
+                        _gazedAtObject.SendMessage("OnSeeExit", null, SendMessageOptions.DontRequireReceiver);
                 }
 
                 _gazedAtObject = hit.transform.gameObject;
 
                 if (IsInteractive(_gazedAtObject))
                 {
-                    _gazedAtObject.SendMessage("OnPointerEnter");
+                    if (_gazedAtObject)
+                        _gazedAtObject.SendMessage("OnSeeEnter", null, SendMessageOptions.DontRequireReceiver);
                 }
             }
 
@@ -173,7 +174,8 @@ public class CardboardReticlePointer : MonoBehaviour
             // No GameObject detected in front of the camera.
             if (IsInteractive(_gazedAtObject))
             {
-                _gazedAtObject?.SendMessage("OnPointerExit");
+                if (_gazedAtObject)
+                    _gazedAtObject.SendMessage("OnSeeExit", null, SendMessageOptions.DontRequireReceiver);
             }
 
             _gazedAtObject = null;
@@ -185,7 +187,8 @@ public class CardboardReticlePointer : MonoBehaviour
         {
             if (IsInteractive(_gazedAtObject))
             {
-                _gazedAtObject?.SendMessage("OnPointerClick");
+                if (_gazedAtObject)
+                    _gazedAtObject.SendMessage("OnSeeClick", null, SendMessageOptions.DontRequireReceiver);
             }
         }
 
@@ -198,7 +201,7 @@ public class CardboardReticlePointer : MonoBehaviour
     private void UpdateDiameters()
     {
         _reticleDistanceInMeters =
-      Mathf.Clamp(_reticleDistanceInMeters, _RETICLE_MIN_DISTANCE, _RETICLE_MAX_DISTANCE);
+            Mathf.Clamp(_reticleDistanceInMeters, _RETICLE_MIN_DISTANCE, _RETICLE_MAX_DISTANCE);
 
         if (_reticleInnerAngle < _RETICLE_MIN_INNER_ANGLE)
         {
@@ -236,8 +239,8 @@ public class CardboardReticlePointer : MonoBehaviour
     private void SetParams(float distance, bool interactive)
     {
         _reticleDistanceInMeters = Mathf.Clamp(distance,
-                                              _RETICLE_MIN_DISTANCE,
-                                              _RETICLE_MAX_DISTANCE);
+            _RETICLE_MIN_DISTANCE,
+            _RETICLE_MAX_DISTANCE);
         if (interactive)
         {
             _reticleInnerAngle = _RETICLE_MIN_INNER_ANGLE + _RETICLE_GROWTH_ANGLE;
